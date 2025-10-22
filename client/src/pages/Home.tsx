@@ -44,13 +44,13 @@ export default function Home() {
     : {};
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen flex flex-col bg-background">
       <Header
         onCartOpen={() => setCartOpen(true)}
         onCustomProjectOpen={() => setCustomProjectOpen(true)}
       />
 
-      <main className="container max-w-6xl mx-auto px-4 py-8">
+      <main className="flex-1 container max-w-6xl mx-auto px-4 py-8">
         {/* Hero Section */}
         {siteSettings?.heroImage && (
           <div className="relative overflow-hidden rounded-lg mb-8 h-64 md:h-80">
@@ -101,6 +101,19 @@ export default function Home() {
           </div>
         )}
       </main>
+
+      {/* Rodapé encantado */}
+      <footer className="border-t border-border bg-gradient-to-r from-background via-muted to-background py-6 text-center">
+        <p className="text-muted-foreground text-sm md:text-base">
+          Desenvolvido com <span className="text-red-500">❤️</span> por{" "}
+          <span className="font-semibold text-foreground hover:text-primary transition-colors">
+            Henrico Amalfi
+          </span>
+        </p>
+        <p className="text-xs text-muted-foreground mt-1">
+          Criatividade, código e café — a tríade sagrada da construção digital.
+        </p>
+      </footer>
 
       <CartDrawer open={cartOpen} onOpenChange={setCartOpen} />
       <CustomProjectDialog
