@@ -1,7 +1,14 @@
 import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useLocation } from "wouter";
-import { Plus, Edit, Trash2, LogOut, Settings } from "lucide-react";
+import {
+  Plus,
+  Edit,
+  Trash2,
+  LogOut,
+  Settings,
+  Image as ImageIcon,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -32,8 +39,8 @@ export default function Admin() {
   const [formData, setFormData] = useState({
     title: "",
     description: "",
-    image_url: "",
-    monthly_price: "",
+    imageUrl: "",
+    monthlyPrice: "",
   });
 
   const [siteSettings, setSiteSettings] = useState({
@@ -124,8 +131,8 @@ export default function Admin() {
     setFormData({
       title: "",
       description: "",
-      image_url: "",
-      monthly_price: "",
+      imageUrl: "",
+      monthlyPrice: "",
     });
   };
 
@@ -139,8 +146,8 @@ export default function Admin() {
     setFormData({
       title: publication.title,
       description: publication.description,
-      image_url: publication.image_url,
-      monthly_price: publication.monthly_price,
+      imageUrl: publication.imageUrl,
+      monthlyPrice: publication.monthlyPrice,
     });
     setEditingPublication(publication);
     setPublicationDialog(true);
@@ -151,7 +158,7 @@ export default function Admin() {
 
     const data = {
       ...formData,
-      monthly_price: parseFloat(formData.monthly_price || "0").toFixed(2),
+      monthlyPrice: parseFloat(formData.monthlyPrice).toFixed(2),
     };
 
     if (editingPublication) {
@@ -182,15 +189,22 @@ export default function Admin() {
     );
   }
 
-  if (!user) return null;
+  if (!user) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <h1 className="text-2xl font-bold">Painel Administrativo</h1>
-          <Button variant="outline" onClick={handleLogout}>
-            <LogOut className="w-4 h-4 mr-2" /> Sair
+          <Button
+            variant="outline"
+            onClick={handleLogout}
+            data-testid="button-logout"
+          >
+            <LogOut className="w-4 h-4 mr-2" />
+            Sair
           </Button>
         </div>
       </header>
@@ -198,15 +212,23 @@ export default function Admin() {
       <main className="container mx-auto px-4 py-8">
         <Tabs defaultValue="publications" className="space-y-6">
           <TabsList>
-            <TabsTrigger value="publications">Publicações</TabsTrigger>
-            <TabsTrigger value="settings">Configurações</TabsTrigger>
+            <TabsTrigger value="publications" data-testid="tab-publications">
+              Publicações
+            </TabsTrigger>
+            <TabsTrigger value="settings" data-testid="tab-settings">
+              Configurações
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="publications" className="space-y-4">
             <div className="flex justify-between items-center">
               <h2 className="text-xl font-semibold">Gerenciar Publicações</h2>
-              <Button onClick={handleOpenCreate}>
-                <Plus className="w-4 h-4 mr-2" /> Nova Publicação
+              <Button
+                onClick={handleOpenCreate}
+                data-testid="button-create-publication"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Nova Publicação
               </Button>
             </div>
 
@@ -215,9 +237,9 @@ export default function Admin() {
             ) : (
               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {publications?.map((pub) => (
-                  <Card key={pub.id}>
+                  <Card key={pub.id} data-testid={`admin-card-${pub.id}`}>
                     <img
-                      src={pub.image_url}
+                      src={pub.imageUrl}
                       alt={pub.title}
                       className="w-full h-48 object-cover rounded-t-lg"
                     />
@@ -229,22 +251,26 @@ export default function Admin() {
                         {pub.description}
                       </p>
                       <p className="font-semibold">
-                        R$ {parseFloat(pub.monthly_price).toFixed(2)}/mês
+                        R$ {parseFloat(pub.monthlyPrice).toFixed(2)}/mês
                       </p>
                       <div className="flex gap-2">
                         <Button
                           size="sm"
                           variant="outline"
                           onClick={() => handleOpenEdit(pub)}
+                          data-testid={`button-edit-${pub.id}`}
                         >
-                          <Edit className="w-4 h-4 mr-1" /> Editar
+                          <Edit className="w-4 h-4 mr-1" />
+                          Editar
                         </Button>
                         <Button
                           size="sm"
                           variant="destructive"
                           onClick={() => deleteMutation.mutate(pub.id)}
+                          data-testid={`button-delete-${pub.id}`}
                         >
-                          <Trash2 className="w-4 h-4 mr-1" /> Excluir
+                          <Trash2 className="w-4 h-4 mr-1" />
+                          Excluir
                         </Button>
                       </div>
                     </CardContent>
@@ -258,7 +284,8 @@ export default function Admin() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Settings className="w-5 h-5" /> Configurações do Site
+                  <Settings className="w-5 h-5" />
+                  Configurações do Site
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -274,6 +301,7 @@ export default function Admin() {
                       })
                     }
                     placeholder="Meu Portfólio"
+                    data-testid="input-site-title"
                   />
                 </div>
                 <div className="space-y-2">
@@ -288,6 +316,7 @@ export default function Admin() {
                       })
                     }
                     placeholder="https://exemplo.com/imagem.jpg"
+                    data-testid="input-hero-image"
                   />
                 </div>
                 <div className="space-y-2">
@@ -302,12 +331,16 @@ export default function Admin() {
                       })
                     }
                     placeholder="5511999999999"
+                    data-testid="input-whatsapp"
                   />
                   <p className="text-xs text-muted-foreground">
                     Formato: código do país + DDD + número (ex: 5511999999999)
                   </p>
                 </div>
-                <Button onClick={handleSaveSettings}>
+                <Button
+                  onClick={handleSaveSettings}
+                  data-testid="button-save-settings"
+                >
                   Salvar Configurações
                 </Button>
               </CardContent>
@@ -317,7 +350,10 @@ export default function Admin() {
       </main>
 
       <Dialog open={publicationDialog} onOpenChange={setPublicationDialog}>
-        <DialogContent className="sm:max-w-[600px]">
+        <DialogContent
+          className="sm:max-w-[600px]"
+          data-testid="dialog-publication"
+        >
           <DialogHeader>
             <DialogTitle>
               {editingPublication ? "Editar Publicação" : "Nova Publicação"}
@@ -336,6 +372,7 @@ export default function Admin() {
                   setFormData({ ...formData, title: e.target.value })
                 }
                 required
+                data-testid="input-pub-title"
               />
             </div>
             <div className="space-y-2">
@@ -348,18 +385,20 @@ export default function Admin() {
                 }
                 rows={4}
                 required
+                data-testid="textarea-pub-description"
               />
             </div>
             <div className="space-y-2">
               <Label htmlFor="pub-image">URL da Imagem</Label>
               <Input
                 id="pub-image"
-                value={formData.image_url}
+                value={formData.imageUrl}
                 onChange={(e) =>
-                  setFormData({ ...formData, image_url: e.target.value })
+                  setFormData({ ...formData, imageUrl: e.target.value })
                 }
                 placeholder="https://exemplo.com/imagem.jpg"
                 required
+                data-testid="input-pub-image"
               />
             </div>
             <div className="space-y-2">
@@ -368,11 +407,12 @@ export default function Admin() {
                 id="pub-price"
                 type="number"
                 step="0.01"
-                value={formData.monthly_price}
+                value={formData.monthlyPrice}
                 onChange={(e) =>
-                  setFormData({ ...formData, monthly_price: e.target.value })
+                  setFormData({ ...formData, monthlyPrice: e.target.value })
                 }
                 required
+                data-testid="input-pub-price"
               />
             </div>
             <div className="flex justify-end gap-2">
@@ -380,10 +420,11 @@ export default function Admin() {
                 type="button"
                 variant="outline"
                 onClick={() => setPublicationDialog(false)}
+                data-testid="button-cancel-pub"
               >
                 Cancelar
               </Button>
-              <Button type="submit">
+              <Button type="submit" data-testid="button-submit-pub">
                 {editingPublication ? "Atualizar" : "Criar"}
               </Button>
             </div>
